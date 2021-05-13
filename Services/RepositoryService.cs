@@ -110,7 +110,7 @@ namespace CarsAndManufacturers2.Services
                 .Select(u => _cars[u.CarGuid]);
         }
 
-        public async Task<List<Manufacturer>> GetAllManufacturers(Guid id)
+        public async Task<List<Manufacturer>> GetAllManufacturers()
         {
 
             checkIfManufacturersExists();
@@ -172,7 +172,7 @@ namespace CarsAndManufacturers2.Services
         {
             if (!_users.ContainsKey(userName))
             {
-                throw new ArgumentException("User does not exist!");
+                throw new ArgumentException($"User: {userName} does not exist!");
             }
             return Task.FromResult(_users[userName]);
         }
@@ -181,9 +181,12 @@ namespace CarsAndManufacturers2.Services
         {
             if (!_users.ContainsKey(userName))
             {
-                throw new ArgumentException("User does not exist!");
+                throw new ArgumentException($"User: {userName} does not exist!");
             }
 
+            _users[userName] = user;
+
+            return Task.FromResult(user);
         }
 
         private async void checkIfCarsExists()

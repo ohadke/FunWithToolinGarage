@@ -1,21 +1,22 @@
 ﻿using CarsAndManufacturers2.Model;
 using CarsAndManufacturers2.Model.Entities;
+using CarsAndManufacturers2.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Project1Solution
+namespace CarsAndManufacturers2.Services
 {
-    public static class DataReader
+    public class DataReader : IDataReader
     {
         // TODO: This should be moved to an external config file
         private const string _basePath = "Data";
         private const string _carsFile = "Cars.csv";
         private const string _mfgFile = "Manufacturers.csv";
 
-        public static string[] ToColumns(this string source)
+        public string[] ToColumns(string source)
         {
             return source
                 .Split(',')
@@ -23,9 +24,9 @@ namespace Project1Solution
                 .ToArray();
         }
 
-        public static Car ToCar(this string source)
+        public Car ToCar(string source)
         {
-            var cols = source.ToColumns();
+            var cols = ToColumns(source);
             return new Car
             (
                 Year : int.Parse(cols[0]),
@@ -40,7 +41,7 @@ namespace Project1Solution
             );         
         }
 
-        public static Manufacturer ToManufacturer(this string source)
+        public Manufacturer ToManufacturer(string source)
         {
             var cols = source
                 .Split(',')
@@ -55,21 +56,21 @@ namespace Project1Solution
             );
         }
 
-        public static Task<IEnumerable<Car>> GetAllCars()
+        public Task<IEnumerable<Car>> GetAllCars()
         {
             return Task.FromResult(File
                 .ReadAllLines($"{_basePath}/{_carsFile}")
                 .Skip(1)
                 .Where(str => !string.IsNullOrWhiteSpace(str))
-                .Select(str => str.ToCar()));
+                .Select(str => ToCar(str)));
         }
 
-        public static Task<IEnumerable<Manufacturer>> GetAllManufacturers()
+        public Task<IEnumerable<Manufacturer>> GetAllManufacturers()
         {
             return Task.FromResult(File
                 .ReadAllLines($"{_basePath}/{_mfgFile}")
                 .Where(str => !string.IsNullOrWhiteSpace(str))
-                .Select(str => str.ToManufacturer()));
+                .Select(str => ToManufacturer(str)));
         }
     }
 }
